@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Hyperphone Analyzer</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        #center-div {
+            color: white;
+            position: absolute;
+            float: left;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        body {
+            background: url('../assets/images/combine1/normal_bg.png') no-repeat center center fixed;
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+        }
+
+        .mid-div {
+            position:fixed;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            margin-top: -25%;
+            margin-left: -25%;
+        }
+    </style>
+</head>
+
+<body class="text-center">
+    <div class="hide" id="center-div">
+        <h1 id="countdown" style="font-size: 100px;">5</h1>
+        <div class="loader" id="loader" style="display: none;">Analying</div>
+    </div>
+
+    <div class="text-white col-12 text-center fw pt-5 hide-div">
+        <h1>Get Ready...</h1>
+    </div>
+
+    <div class="col-12 hide-div">
+        <img src="../assets/images/combine1/5_Image.png" class="mid-div"/>
+    </div>
+
+    <div class="col-12 text-center fw header-text hide-div" style="position: absolute; bottom: 25px;">
+        <h4 class="text-white">Point the screen down at your scalp now without touching it.</h4>
+        <br>
+        <button id="ios-init-btn" type="button" class="btn btn-light btn-lg btn-block hide" ontouchstart="javascript:sndInit();">Got it! Let's start.</button>
+    </div>
+
+    <audio src="../assets/others/beep.mp3" id="beep" />
+    <audio src="../assets/others/scan.mp3" id="scan" />
+
+    <script src="../assets/js/jquery.min.js"></script>
+    <script>
+
+        //load beep file
+        var beepAudio = document.getElementById("beep");
+        var scanAudio = document.getElementById("scan");
+        var isTimerSet = false;
+
+        //check if device support device oritentaion API
+        //if yes, start countdown if device is rotate to 120 above or -120 below
+        //if no, start countdown after 5 seconds
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', function (event) {
+                if (event.beta > 120 && !isTimerSet) {
+                    isTimerSet = true;
+                    scan();
+                }
+
+                if (event.beta < -120 && !isTimerSet) {
+                    isTimerSet = true;
+                    scan();
+                }
+            });
+
+        } else {
+            setTimeout(function () {
+                scan();
+            }, 5000);
+        }
+
+        //check if device is ios, if yes, then display init btn to trigger sound
+        if ((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i)) || (navigator.userAgent.match(/iPad/i))) {
+            $("#ios-init-btn").show();
+
+            function sndInit() {
+                beepAudio.play();
+                beepAudio.pause();
+                beepAudio.currentTime = 0;
+
+                scanAudio.play();
+                scanAudio.pause();
+                scanAudio.currentTime = 0;
+
+                $("#ios-init-btn").hide();
+            }
+        }
+
+        //set timer for countdown simulation
+        function scan() {
+            $('.hide-div').hide();
+            $('#center-div').show();
+
+            document.body.style.backgroundImage = "none";
+            document.body.style.backgroundColor = "black";
+            beepAudio.play();
+
+            var colors = [
+                { "color": "red", "count": 4, "delay": 1 },
+                { "color": "green", "count": 3, "delay": 2 },
+                { "color": "blue", "count": 2, "delay": 3 },
+                { "color": "white", "count": 1, "delay": 4 }
+            ];
+
+            setTimeout(function () {
+                document.body.style.backgroundColor = "red";
+                document.getElementById("countdown").innerHTML = 4;
+                beepAudio.play();
+            }, 1000);
+
+            setTimeout(function () {
+                document.body.style.backgroundColor = "#1eff00";
+                document.getElementById("countdown").innerHTML = 3;
+                beepAudio.play();
+            }, 2000);
+
+            setTimeout(function () {
+                document.body.style.backgroundColor = "#004eff";
+                document.getElementById("countdown").innerHTML = 2;
+                beepAudio.play();
+            }, 3000);
+
+            setTimeout(function () {
+                document.body.style.backgroundColor = "white";
+                document.getElementById("countdown").innerHTML = 1;
+                document.getElementById("countdown").style.color = "black";
+                beepAudio.play();
+            }, 4000);
+
+            setTimeout(function () {
+                scanAudio.play();
+            }, 5000);
+
+            setTimeout(function () {
+                window.location.href = "loading.html";
+            }, 6500);
+        }
+    </script>
+</body>
+
+</html>
